@@ -61,7 +61,7 @@ class BasicBlock(nn.Module):
 class ResNet(nn.Module):
 
     def __init__(
-        self, block: Type[Union[BasicBlock]], layers: List[int], num_classes: int = 800, zero_init_residual: bool = False, replace_stride_with_dilation: Optional[List[bool]] = None,) -> None:
+        self, block: Type[Union[BasicBlock]], layers: List[int], num_classes: int = 800, zero_init_residual: bool = True, replace_stride_with_dilation: Optional[List[bool]] = None,) -> None:
         super(ResNet, self).__init__()
 
         self.inplanes = 64
@@ -96,7 +96,8 @@ class ResNet(nn.Module):
         # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
         if zero_init_residual:
             for m in self.modules():
-                  nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
+                if isinstance(m, BasicBlock):
+                    nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
 
     def _make_layer(self, block: Type[Union[BasicBlock]], planes: int, blocks: int,
                     stride: int = 1, dilate: bool = False) -> nn.Sequential:
@@ -155,4 +156,8 @@ class ResNet(nn.Module):
     
 def get_custom_resnet18():
     x = ResNet(BasicBlock, [2,2,2,2])
+    return x
+
+def get_custom_resnet34():
+    x = ResNet(BasicBlock, [3,4,6,3])
     return x
