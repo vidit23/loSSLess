@@ -238,6 +238,8 @@ def adjust_learning_rate(optimizer, loader, step):
 
 # create a dataset from your image folder
 dataset = CustomDataset(root='/dataset', split='unlabeled', transform=Transform())
+trainDataset = CustomDataset(root='/dataset', split='train', transform=Transform())
+dataset = torch.utils.data.ConcatDataset((dataset, trainDataset))
 
 # build a PyTorch dataloader
 loader = torch.utils.data.DataLoader(dataset, batch_size=1024, shuffle=True, pin_memory=True, num_workers=4)
